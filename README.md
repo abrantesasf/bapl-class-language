@@ -11,7 +11,7 @@ Roberto Ierusalimschy
 - [x] Kickoff
 
 ### Week 1: Introduction to LPeg (2023-12-01 - 2023-12-08)
-- [ ] Installing Lua and LuaRocks
+- [x] Installing Lua and LuaRocks
 - [ ] Introduction
 - [ ] Ch. 1: Getting Started
 - [ ] Ch. 2: Interlude: The Eight-Queen Puzzle
