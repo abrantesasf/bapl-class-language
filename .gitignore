@@ -1,9 +1,6 @@
 # Created by https://www.toptal.com/developers/gitignore/api/latex,c,cmake,lua,emacs,vim,c++
 # Edit at https://www.toptal.com/developers/gitignore?templates=latex,c,cmake,lua,emacs,vim,c++
 
-### BaPL: arquivos privados ###
-privado/
-
 ### C ###
 # Prerequisites
 *.d
