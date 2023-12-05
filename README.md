@@ -16,9 +16,9 @@ Roberto Ierusalimschy
 - [x] Ch. 1: Getting Started
 - [x] Ch. 2: Interlude: The Eight-Queen Puzzle
 - [ ] Ch. 5: Tables
-- [ ] Introduction to LPeg
-- [ ] Getting Started
-- [ ] Basic Constructions
+- [x] Introduction to LPeg
+- [x] Getting Started
+- [x] Basic Constructions
 - [ ] Concatenation, Repetition and Choices
 - [ ] Matching a Summation
 - [ ] Captures
