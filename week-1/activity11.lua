@@ -10,7 +10,7 @@ local lpeg = require "lpeg"
 spc = lpeg.P(" ")^0
 
 -- Pattern for 1 or more numbers
-num = lpeg.S("0123456789")^1
+num = lpeg.R("09")^1
 
 -- Pattern for + operator
 plus = lpeg.P("+")
