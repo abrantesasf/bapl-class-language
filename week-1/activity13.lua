@@ -21,7 +21,7 @@ parfim = espaco * lpeg.P(")") * espaco
 -- Pattern:
 p = lpeg.C(numero) * (lpeg.Cp() * adisub * lpeg.C(numero))^0
 
--- Tests:
+-- Some tests:
 -- These must be OK:
 print(p:match("12+13+25"))
 print(p:match("12 + 13 + 25"))
