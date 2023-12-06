@@ -21,8 +21,8 @@ Roberto Ierusalimschy
 - [x] Basic Constructions
 - [x] Concatenation, Repetition and Choices
 - [x] Matching a Summation
-- [ ] Captures
-- [ ] Position capture
+- [x] Captures
+- [x] Position capture
 - [ ] Predicates
 - [ ] Matching the whole subject
 - [ ] Summations
