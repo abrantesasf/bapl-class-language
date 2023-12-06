@@ -22,8 +22,10 @@ parfim = espaco * lpeg.P(")") * espaco
 p = lpeg.C(numero) * (lpeg.Cp() * adisub * lpeg.C(numero))^0
 
 -- Tests:
+-- These must be OK:
 print(p:match("12+13+25"))
 print(p:match("12 + 13 + 25"))
 print(p:match("12+13+25       + 34  +               12345"))
 print(p:match("100 + 200 + 100 + 400"))
+-- These must FAIL:
 print(p:match("+"))
