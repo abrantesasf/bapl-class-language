@@ -1,3 +1,5 @@
+-- Programming with Lua, Chapter 2
+
 N = 8
 
 -- Verifica se a posição (n, c) é livre de ataques

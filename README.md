@@ -19,8 +19,8 @@ Roberto Ierusalimschy
 - [x] Introduction to LPeg
 - [x] Getting Started
 - [x] Basic Constructions
-- [ ] Concatenation, Repetition and Choices
-- [ ] Matching a Summation
+- [x] Concatenation, Repetition and Choices
+- [x] Matching a Summation
 - [ ] Captures
 - [ ] Position capture
 - [ ] Predicates
