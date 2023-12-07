@@ -23,8 +23,8 @@ Roberto Ierusalimschy
 - [x] Matching a Summation
 - [x] Captures
 - [x] Position capture
-- [ ] Predicates
-- [ ] Matching the whole subject
+- [x] Predicates
+- [x] Matching the whole subject
 - [ ] Summations
 - [ ] Adding and optional sign to numerals
 - [ ] Arithmetic expressions
