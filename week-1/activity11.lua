@@ -7,7 +7,7 @@
 local lpeg = require "lpeg"
 
 -- Pattern for 0 or more spaces
-spc = lpeg.P(" ")^0
+spc = lpeg.S(" \n\t")^0
 
 -- Pattern for 1 or more numbers
 num = lpeg.R("09")^1
