@@ -31,6 +31,20 @@ Roberto Ierusalimschy
 - [ ] Adding more operators
 - [ ] Parenthesized Expressions
 
+### Week 2: Arithmetic Expressions (2023-12-08 - 2023-12-15)
+- [ ] Introduction to the LPeg Tutorial
+- [ ] Overview of the compiler and the stack machine
+- [ ] Stack Machines
+- [ ] Numbers
+- [ ] Hexadecimal Numbers
+- [ ] Summations
+- [ ] Adding Multiplication and Division
+- [ ] Products
+- [ ] Adding More Operators - Part 1
+- [ ] Parenthesized Expressions
+- [ ] Adding More Operators - Part 2
+- [ ] Floating-point Numbers
+
 
 ## Other info
 Selene is a general purpose language built on top of Lua and Lpeg. This language
