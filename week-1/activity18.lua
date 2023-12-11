@@ -3,16 +3,20 @@
 -- other operations.
 
 local lpeg = require "lpeg"
+local pt = require "pt"
 
 espaco = lpeg.S(" \n\t")^0
 vazio = -lpeg.P(1)
-numero = (lpeg.R("09")^1 / tonumber) * espaco
+sinal = lpeg.S("+-")^-1
+numero = ((sinal * lpeg.R("09")^1) / tonumber) * espaco
 operador = lpeg.C(lpeg.S("+-")) * espaco
 
 soma = espaco * numero * (operador * numero)^0 * vazio
 
-print(soma:match("12 - 43 + 45 - 90"))
+print(soma:match("12 + 43 + -43 + 3"))
 
+-- Traverse the list 2 by 2 elements, and check to
+-- verify if we are adding ou subtracting:
 function fold(lst)
    local acc = lst[1]
    for i = 2, #lst, 2 do
