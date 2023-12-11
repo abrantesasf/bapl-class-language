@@ -14,7 +14,7 @@ parini = lpeg.P("(") * espaco
 parfim = lpeg.P(")") * espaco
 
 -- Pattern:
-p = lpeg.C(numero) * (lpeg.Cp() * adisub * lpeg.C(numero))^0 * vazio
+p = espaco * lpeg.C(numero) * (lpeg.Cp() * adisub * lpeg.C(numero))^0 * vazio
 
 -- Some tests:
 -- These must be OK:
