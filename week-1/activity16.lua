@@ -78,9 +78,9 @@ print(soma:match("12 + 32 + 14 + 90"))
 soma = espaco * lpeg.Ct(numero * (operador * numero)^0) * vazio
 print(soma:match("12 + 32 + 14 + 90"))            --> prints table address
 
---local pt = require "pt"                           --> library to print tables
---                                                  --> install it with luarocks
---print(pt.pt(soma:match("12 + 32 + 14 + 90")))
+local pt = require "pt"              --> library to print tables
+                                     --> cp lesson-0/pt.lua /opt/lua/lib/lua/5.4
+print(pt.pt(soma:match("12 + 32 + 14 + 90")))
 
 -- Now we have a list (in a table) that can be processed easyly. We
 -- create a function, usualy called "fold", that will receive the
