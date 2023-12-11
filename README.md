@@ -15,7 +15,7 @@ Roberto Ierusalimschy
 - [x] Introduction
 - [x] Ch. 1: Getting Started
 - [x] Ch. 2: Interlude: The Eight-Queen Puzzle
-- [ ] Ch. 5: Tables
+- [x] Ch. 5: Tables
 - [x] Introduction to LPeg
 - [x] Getting Started
 - [x] Basic Constructions
