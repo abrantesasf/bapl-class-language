@@ -10,21 +10,21 @@ local lpeg = require "lpeg"
 spc = lpeg.S(" \n\t")^0
 
 -- Pattern for 1 or more numbers
-num = lpeg.R("09")^1
+num = lpeg.R("09")^1 * spc
 
 -- Pattern for + operator
-plus = lpeg.P("+")
+plus = lpeg.P("+") * spc
 
 -- Quick-and-dirty pattern for a non-empty list of numerals intercalated with
 -- the plus operator:
-p = spc * num * spc * plus * spc * num * spc
+p = spc * num * plus * num
 
 -- Extending the idea to matches binary operators (at most one operator
 -- must be present):
-mathop = lpeg.S("+-*/%")^-1
+mathop = lpeg.S("+-*/%")^-1 * spc
 
 -- Quick-and-dirty pattern for binary arithmetic:
-p2 = spc * num * spc * mathop * spc * num * spc
+p2 = spc * num * mathop * num
 
 -- Pattern test:
 -- These must be OK:
@@ -36,7 +36,7 @@ print(p:match(" 1 + 1"))
 print(p:match(" 1 + 1      "))
 -- These extended math must be OK:
 print(p2:match("1-1"))
-print(p2:match("    1*1"))
+print(p2:match("     1*1"))
 print(p2:match("  1/   1"))
 print(p2:match("  1    %1"))
 print(p2:match(" 1 + 1"))

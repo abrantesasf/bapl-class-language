@@ -6,15 +6,16 @@ local lpeg = require "lpeg"
 -- Lexical Elements:
 vazio = -lpeg.P(1)
 espaco = lpeg.S(" \n\t")^0
-sinal = lpeg.S("+-")
-numero = lpeg.P(sinal)^-1 * lpeg.R("09")^1 * espaco
+sinal = lpeg.S("+-")^-1
+numero = ((sinal * lpeg.R("09")^1) / tonumber) * espaco
 adisub = lpeg.S("+-") * espaco
 muldiv = lpeg.S("*/") * espaco
+operador = (adisub + muldiv) * espaco
 parini = lpeg.P("(") * espaco
 parfim = lpeg.P(")") * espaco
 
 -- Pattern:
-p = espaco * lpeg.C(numero) * (adisub * lpeg.C(numero))^0 * vazio
+p = espaco * numero * (adisub * numero)^0 * vazio
 
 -- Some tests:
 -- These must be OK:
