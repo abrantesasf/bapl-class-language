@@ -4,7 +4,6 @@
 local lpeg = require "lpeg"
 local pt = require "pt"
 
-
 -- Lexical Elements:
 vazio = -lpeg.P(1)
 espaco = lpeg.S(" \n\t")^0
@@ -51,8 +50,7 @@ local pot = espaco * lpeg.Ct(numero * (opExp * numero)^0) / foldexp
 local term = espaco * lpeg.Ct(pot * (opMul * pot)^0) / fold
 local sum = espaco * lpeg.Ct(term * (opAdd * term)^0) / fold * vazio
 
--- Some tests:
--- These must be OK:
+-- Some tests: These must be OK:
 local teste = "-10 + 2 ^ 2 ^ 3 + 4 + 50"
 local tabela = espaco * lpeg.Ct(numero * ((opMul + opAdd + opExp) * numero)^0) * vazio
 print(teste)

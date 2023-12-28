@@ -4,7 +4,6 @@
 local lpeg = require "lpeg"
 local pt = require "pt"
 
-
 -- Lexical Elements:
 vazio = -lpeg.P(1)
 espaco = lpeg.S(" \n\t")^0
@@ -59,14 +58,12 @@ print(teste)
 print(pt.pt(tabela:match(teste)))
 print(sum:match(teste))
 
--- Until here, everuthing is OK. But frequently we'll want to have parenthesis
+-- Until here, everything is OK. But frequently we'll want to have parenthesis
 -- in ours expressions, that is, we will have subexpressions inside our
 -- expressions, delimited by parenthesis.
-
 -- This kind of thing is not possible in LPEG directly with patterns, because
 -- we'll need to use recursion: a subpression of a subexpression of... and so.
--- For this kind of thing we'll need to use a grammar to define this recursive
--- pattern.
+-- For this we'll need to use a grammar to define this recursive pattern.
 
 -- Let's define the parenthesis:
 local OP = lpeg.P("(") * espaco
