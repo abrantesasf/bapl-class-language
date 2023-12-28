@@ -25,15 +25,15 @@ Roberto Ierusalimschy
 - [x] Position capture
 - [x] Predicates
 - [x] Matching the whole subject
-- [ ] Summations
-- [ ] Adding and optional sign to numerals
-- [ ] Arithmetic expressions
-- [ ] Adding more operators
-- [ ] Parenthesized Expressions
+- [x] Summations
+- [x] Adding and optional sign to numerals
+- [x] Arithmetic expressions
+- [x] Adding more operators
+- [x] Parenthesized Expressions
 
 ### Week 2: Arithmetic Expressions (2023-12-08 - 2023-12-15)
-- [ ] Introduction to the LPeg Tutorial
-- [ ] Overview of the compiler and the stack machine
+- [x] Introduction to the LPeg Tutorial
+- [x] Overview of the compiler and the stack machine
 - [ ] Stack Machines
 - [ ] Numbers
 - [ ] Hexadecimal Numbers
