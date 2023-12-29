@@ -1,7 +1,0 @@
--- Week 2, Activity 4
--- Numbers
--- We'll start implementating a very simple language that only have numbers, but
--- it's a good illustration to what is going to be the FRONTEND (our parser) and
--- the BACKEND (our code generator and virtual machine).
---
--- The interpreter was developed in interpreter.lua file.
