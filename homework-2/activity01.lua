@@ -444,5 +444,66 @@ print(exp:match("23 * 3 - 14 / 2"))               --> 62.0
 print(exp:match("34 + 89 * 23"))                  --> 2081
 print(exp:match("5 + -5 + 2 * -5"))               --> -10
 print(exp:match("5 % 3"))                         --> 2
-print(exp:match("5 % 3 * 4  ")) s                  --> 8
+print(exp:match("5 % 3 * 4  "))                   --> 8
 print(exp:match("5 % 3 * 4 abc"))                 --> nil
+
+
+
+
+-- 7. GRAMMAR:
+--------------
+-- From sections 1 to 6, we cover the "parsing expressions" part of our
+-- formalism, Parsing Expression Grammar (PEG). In this section we'll see
+-- the oter part, "grammar", wich permitt us to do more complex things,
+-- like recursive patterns.
+
+-- Informally, a grammar is a set of named patterns where each pattern can refer
+-- to other patterns (or to itself) through their names. For example, a simple
+-- Lisp grammar for S-expressions is:
+--     sexp <- name / '(' list ')'
+--     list <- (sexp spaces)*
+-- A S-exp is a name OR a list enclosed in parenthesis. A list is zero or more
+-- s-exp followed by spaces.
+
+-- LPeg uses Lua tables to support grammars:
+--     - Key: is the name of a patterns
+--     - Value: is the corresponding LPeg pattern
+
+-- To refer to a pattern, we use a NONTERMINAL (or variable) pattern, through
+-- the lpeg.V function (receives the name of a pattern and returns the
+-- corresponding nonterminal pattern).
+
+-- As entries in a table have no intrinsic order, we need also a way to signal
+-- which pattern is the initial one, by assigning the initial pattern itself or
+-- it's name to the index 1 of the table.
+
+
+-- Here is a grammar to S-exp:
+local name = loc.alpha^1
+local spaces = loc.space^0
+local g = {
+   [1] = "sexp",
+   sexp = name + "(" * lpeg.V"list" * ")",
+   list = (spaces * lpeg.V"sexp" * spaces)^0
+}
+
+-- Once we have the grammar in a table, we need do "close" the table and get
+-- the final pattern with lpeg.P (this means to internally connect all
+-- nonterminals to theis respective patterns, raising and error if there is
+-- any undefined nonterminal):
+local p = lpeg.P(g)
+p = p * -lpeg.P(1)  -- ATTENTION: this is necessary to check the whole subject
+
+print(p:match("(() (a (b c)))"))                  --> 50
+print(p:match("(a (b) (c d))"))                   --> 14
+print(p:match("(a (b) (c d)"))                    --> nil
+print(p:match("a (b) (c d))"))                    --> nil
+
+-- Finally, we can add captures to our pattern and use a simplier syntax:
+local p = lpeg.P{"sexp",
+                 sexp = lpeg.C(name) + "(" * lpeg.V"list" * ")",
+                 list = lpeg.Ct((spaces * lpeg.V"sexp" * spaces)^0)
+}
+p = p * -lpeg.P(1)
+
+print(pt.pt(p:match("(esta e (uma lista) (em) lisp)")))
