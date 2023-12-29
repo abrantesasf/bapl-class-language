@@ -30,7 +30,7 @@ end
 
 -- What is a number? Note that an AST node is returned
 local decnum = ((sinal * loc.digit^1) / tonumber) / node * spc
-local hexnum = ((hexpre * hexdig^1) / tonumber) / node * spc
+local hexnum = ((sinal * hexpre * hexdig^1) / tonumber) / node * spc
 local numero = spc * (hexnum + decnum) * spc
 
 -- The parser per si:
