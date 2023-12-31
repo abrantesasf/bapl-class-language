@@ -23,7 +23,7 @@ local spc = loc.space^0
 local vazio = -lpeg.P(1)
 local sinal = lpeg.S("+")^-1
 local menosUnario = lpeg.P("-") * spc
-local numsci = (lpeg.S("Ee") * sinal * loc.digit^1)^-1 * spc
+local numsci = (lpeg.S("Ee") * lpeg.S("+-")^-1 * loc.digit^1)^-1 * spc
 local dot = lpeg.P(".")^-1
 local numeral = ((sinal * loc.digit^1 * dot * loc.digit^0) +
                  (dot * loc.digit^1)) * numsci * spc
