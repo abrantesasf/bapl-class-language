@@ -166,7 +166,8 @@ grammar = lpeg.P{"stats",
          + OB * SC^-1 * CB / nodeNull,
    stat = block
         + ID * Assign * rel / nodeAssign
-        + ret * exp / nodeRet,
+        + ret * exp / nodeRet
+        + rel,
    primary = spc * numero + OP * rel * CP + var,
    pot = lpeg.Ct(spc * primary * (opPot * primary)^0) / foldBinDir,
    unarymp = (opUnaMin * unarymp / foldUnaMin) +
@@ -239,7 +240,8 @@ local function codeStat(state, ast)
       codeExp(state, ast.exp)
       addCode(state, "ret")
    else
-      error("invalid tree")
+      codeExp(state, ast)
+      --error("invalid tree")
    end
 end
 

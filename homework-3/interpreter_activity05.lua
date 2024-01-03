@@ -155,7 +155,7 @@ local rel = lpeg.V"rel"             -- relational expressions
 grammar = lpeg.P{"stats",
    stats = stat * (SC * stats)^-1 / nodeSeq,
    block = OB * stats * SC^-1 * CB + OB * SC^-1 * CB / nodeNull,
-   stat = block + ID * Assign * rel / nodeAssign,
+   stat = block + ID * Assign * rel / nodeAssign + rel,
    primary = spc * numero + OP * rel * CP + var,
    pot = lpeg.Ct(spc * primary * (opPot * primary)^0) / foldBinDir,
    unarymp = (opUnaMin * unarymp / foldUnaMin) +
@@ -225,7 +225,8 @@ local function codeStat(state, ast)
    elseif ast.tag == "nothing" then
       -- do nothing here
    else
-      error("invalid tree")
+      codeExp(state, ast)
+      --error("invalid tree")
    end
 end
 
@@ -300,7 +301,7 @@ local function run(code, mem, stack)
          pc = pc + 1
          local id = code[pc]
          mem[id] = stack[top]
-         top = top + 1
+         top = top - 1
       else
          error("unknown instruction")
       end

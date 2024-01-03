@@ -1,5 +1,5 @@
--- Week 3, Activity 04
--- Sequences and Blocks
+-- Week 3, Activity 03
+-- Assignments
 --
 -- Student: Abrantes Araújo Silva Filho
 
@@ -39,9 +39,6 @@ local decimal = ((digit^1 * dot^-1 * digit^0) + (dot^-1 * digit^1)) * sufEXP * s
 -- Punctuators:
 local OP = lpeg.P("(") * spc
 local CP = lpeg.P(")") * spc
-local OB = lpeg.P("{") * spc
-local CB = lpeg.P("}") * spc
-local SC = lpeg.P(";") * spc
 
 -- Numeric operators (binary and unary)
 local opPot = lpeg.C(lpeg.P("^")) * spc
@@ -65,13 +62,13 @@ local Assign = lpeg.P("=") * spc
 --------------------------- Functions for the Parser: --------------------------
 
 -- Function to get a number and return a node for an AST represeenting a number:
-local function nodeNum(numero)
+function nodeNum(numero)
    return { tag = "numero",
             val = numero }
 end
 
 -- Function to get a variable and return a node for as AST
-local function nodeVar(var)
+function nodeVar(var)
    return { tag = "variable",
             var = var }
 end
@@ -81,18 +78,6 @@ local function nodeAssign(id, exp)
    return { tag = "assign",
             id = id,
             exp = exp }
-end
-
--- Function to get a statement and, optionally, a list of statements,
--- and return a note for AST:
-local function nodeSeq(st1, st2)
-   if st2 == nil then
-      return st1
-   else
-      return { tag = "seq",
-               st1 = st1,
-               st2 = st2 }
-   end
 end
 
 -- Functions to fold a list and convert the list to an AST:
@@ -137,9 +122,6 @@ end
 
 local numero = spc * ((hexdec / tonumber) + (decimal / tonumber)) / nodeNum * spc
 local var = ID / nodeVar            -- variables
-local stat = lpeg.V"stat"           -- a statement
-local stats = lpeg.V"stats"         -- a list of statements
-local block = lpeg.V"block"         -- a block of code
 local primary = lpeg.V"primary"     -- primary (for recursion and parenthesis)
 local pot = lpeg.V"pot"             -- exponentials
 local unarymp = lpeg.V"unarymp"     -- unary minus or unary plus 
@@ -147,10 +129,8 @@ local term = lpeg.V"term"           -- multiplicative expressions
 local exp = lpeg.V"exp"             -- aditive expressions
 local rel = lpeg.V"rel"             -- relational expressions
 
-grammar = lpeg.P{"stats",
-   stats = stat * (SC * stats)^-1 / nodeSeq,
-   block = OB * stats * SC^-1 * CB,
-   stat = block + ID * Assign * rel / nodeAssign + rel,
+grammar = lpeg.P{"stat",
+   stat = ID * Assign * exp / nodeAssign + rel,
    primary = spc * numero + OP * rel * CP + var,
    pot = lpeg.Ct(spc * primary * (opPot * primary)^0) / foldBinDir,
    unarymp = (opUnaMin * unarymp / foldUnaMin) +
@@ -161,6 +141,8 @@ grammar = lpeg.P{"stats",
 }
 grammar = spc * grammar * eos
 
+
+   
 ---------------------------------- The parser per si: --------------------------
 local function parse(input)
    return grammar:match(input)
@@ -211,15 +193,11 @@ end
 -- Function to assign expressions to variables:
 local function codeStat(state, ast)
    if ast.tag == "assign" then
-      codeExp(state, ast.exp)  -- evaluates the expression to get the value assigned
+      codeExp(state, ast.exp) -- evaluates the expression to get the value assigned
       addCode(state, "store")
       addCode(state, ast.id)
-   elseif ast.tag == "seq" then
-      codeStat(state, ast.st1)
-      codeStat(state, ast.st2)
    else
       codeExp(state, ast)
-      --error("invalid tree")
    end
 end
 
@@ -324,5 +302,5 @@ print(pt.pt(code))
 local stack = {}
 local mem = {k0 = 0, k1 = 1, k10 = 10}  -- test variables
 run(code, mem, stack)
-print(stack[1])
-print(mem.result)
+print("stack[top] =", stack[1])
+print("mem.result =", mem.result)

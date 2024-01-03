@@ -1,5 +1,5 @@
--- Week 3, Activity 04
--- Sequences and Blocks
+-- Week 3, Activity 07
+-- Print statement
 --
 -- Student: Abrantes Araújo Silva Filho
 
@@ -42,6 +42,7 @@ local CP = lpeg.P(")") * spc
 local OB = lpeg.P("{") * spc
 local CB = lpeg.P("}") * spc
 local SC = lpeg.P(";") * spc
+local PRNT = lpeg.P("@") * spc
 
 -- Numeric operators (binary and unary)
 local opPot = lpeg.C(lpeg.P("^")) * spc
@@ -61,6 +62,9 @@ local opRel = (lte + gte + lt + gt + eq + neq) * spc
 
 -- Assignments for statements
 local Assign = lpeg.P("=") * spc
+
+-- Reserved words
+local ret = lpeg.P("return") * spc
 
 --------------------------- Functions for the Parser: --------------------------
 
@@ -93,6 +97,21 @@ local function nodeSeq(st1, st2)
                st1 = st1,
                st2 = st2 }
    end
+end
+
+-- Function to treat an empty block:
+local function nodeNull()
+   return { tag = "nothing" }
+end
+
+-- Function to reat a return:
+local function nodeRet(exp)
+   return { tag = "ret", exp = exp }
+end
+
+-- Function to print a expression:
+local function nodePRNT(exp)
+   return { tag = "prnt", exp = exp }
 end
 
 -- Functions to fold a list and convert the list to an AST:
@@ -149,8 +168,13 @@ local rel = lpeg.V"rel"             -- relational expressions
 
 grammar = lpeg.P{"stats",
    stats = stat * (SC * stats)^-1 / nodeSeq,
-   block = OB * stats * SC^-1 * CB,
-   stat = block + ID * Assign * rel / nodeAssign + rel,
+   block = OB * stats * SC^-1 * CB
+         + OB * SC^-1 * CB / nodeNull,
+   stat = block
+        + ID * Assign * rel / nodeAssign
+        + ret * exp / nodeRet
+        + PRNT * exp / nodePRNT
+        + rel,
    primary = spc * numero + OP * rel * CP + var,
    pot = lpeg.Ct(spc * primary * (opPot * primary)^0) / foldBinDir,
    unarymp = (opUnaMin * unarymp / foldUnaMin) +
@@ -217,6 +241,14 @@ local function codeStat(state, ast)
    elseif ast.tag == "seq" then
       codeStat(state, ast.st1)
       codeStat(state, ast.st2)
+   elseif ast.tag == "nothing" then
+      -- do nothing here
+   elseif ast.tag == "ret" then
+      codeExp(state, ast.exp)
+      addCode(state, "ret")
+   elseif ast.tag == "prnt" then
+      codeExp(state, ast.exp)
+      addCode(state, "prnt")
    else
       codeExp(state, ast)
       --error("invalid tree")
@@ -227,6 +259,10 @@ end
 local function compile(ast)
    local state = { code = {} }
    codeStat(state, ast)
+   -- next 3 lines forces the compiler to always end with a return:
+   addCode(state, "push")
+   addCode(state, 0)
+   addCode(state, "ret")
    return state.code
 end
 
@@ -240,8 +276,16 @@ end
 local function run(code, mem, stack)
    local pc = 1                   -- program counter
    local top = 0                  -- top of stack
-   while pc <= #code do
-      if code[pc] == "push" then
+   while true do
+      -- In the block: code to help debug the interpreter, if needed
+      --[[
+      io.write("-->")
+      for i = 1, top do io.write(stack[i], " ") end
+      io.write("\n", code[pc], "\n")
+      --]]
+      if code[pc] == "ret" then
+         return
+      elseif code[pc] == "push" then
          pc = pc + 1
          top = top + 1
          stack[top] = code[pc]
@@ -295,6 +339,8 @@ local function run(code, mem, stack)
          local id = code[pc]
          mem[id] = stack[top]
          top = top - 1
+      elseif code[pc] == "prnt" then
+         print(stack[top])
       else
          error("unknown instruction")
       end
@@ -322,7 +368,6 @@ print(pt.pt(code))
 -- We run the interpreter passing as arguments the
 -- intermediate code, a memory for global variables, and the stack:
 local stack = {}
-local mem = {k0 = 0, k1 = 1, k10 = 10}  -- test variables
+local mem = {}
 run(code, mem, stack)
-print(stack[1])
-print(mem.result)
+--print(stack[1])
