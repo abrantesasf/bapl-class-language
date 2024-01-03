@@ -1,8 +1,5 @@
--- Week 3, "Activity 00"
--- This is not a real activity in the course, this is a kind of refactoring the
--- code to clean up the mess a little bit. Beside the clean up, I decide to use
--- some C Standard names for patterns to keep the things more or less in paralel
--- with standard names alredy used.
+-- Week 3, Activity 05
+-- Empty statements
 --
 -- Student: Abrantes Araújo Silva Filho
 
@@ -24,10 +21,12 @@ local spc = loc.space^0
 local eos = -lpeg.P(1)
 
 -- Basic identifiers
-local nondigit = lpeg.R("az", "AZ", "__")
+local alpha = lpeg.R("az", "AZ", "__")
 local digit = loc.digit
+local alphanum = alpha + digit
 local dot = lpeg.P(".")
-
+local ID = lpeg.C(alpha * alphanum^0) * spc
+   
 -- Numeric constants
 local sign = lpeg.S("+-")
 local hexpre = lpeg.P("0") * lpeg.S("Xx")
@@ -40,6 +39,9 @@ local decimal = ((digit^1 * dot^-1 * digit^0) + (dot^-1 * digit^1)) * sufEXP * s
 -- Punctuators:
 local OP = lpeg.P("(") * spc
 local CP = lpeg.P(")") * spc
+local OB = lpeg.P("{") * spc
+local CB = lpeg.P("}") * spc
+local SC = lpeg.P(";") * spc
 
 -- Numeric operators (binary and unary)
 local opPot = lpeg.C(lpeg.P("^")) * spc
@@ -57,12 +59,45 @@ local eq = lpeg.C(lpeg.P("==")) * spc
 local neq = lpeg.C(lpeg.P("!=")) * spc
 local opRel = (lte + gte + lt + gt + eq + neq) * spc
 
+-- Assignments for statements
+local Assign = lpeg.P("=") * spc
+
 --------------------------- Functions for the Parser: --------------------------
 
 -- Function to get a number and return a node for an AST represeenting a number:
-function node(numero)
+local function nodeNum(numero)
    return { tag = "numero",
             val = numero }
+end
+
+-- Function to get a variable and return a node for as AST
+local function nodeVar(var)
+   return { tag = "variable",
+            var = var }
+end
+
+-- Function to get an assignment and return a node for AST
+local function nodeAssign(id, exp)
+   return { tag = "assign",
+            id = id,
+            exp = exp }
+end
+
+-- Function to get a statement and, optionally, a list of statements,
+-- and return a note for AST:
+local function nodeSeq(st1, st2)
+   if st2 == nil then
+      return st1
+   else
+      return { tag = "seq",
+               st1 = st1,
+               st2 = st2 }
+   end
+end
+
+-- Function to treat an empty block:
+local function nodeNull()
+   return { tag = "nothing" }
 end
 
 -- Functions to fold a list and convert the list to an AST:
@@ -105,7 +140,11 @@ end
 
 -------------------- Our grammar for mathematic expression: --------------------
 
-local numero = spc * ((hexdec / tonumber) + (decimal / tonumber)) / node * spc
+local numero = spc * ((hexdec / tonumber) + (decimal / tonumber)) / nodeNum * spc
+local var = ID / nodeVar            -- variables
+local stat = lpeg.V"stat"           -- a statement
+local stats = lpeg.V"stats"         -- a list of statements
+local block = lpeg.V"block"         -- a block of code
 local primary = lpeg.V"primary"     -- primary (for recursion and parenthesis)
 local pot = lpeg.V"pot"             -- exponentials
 local unarymp = lpeg.V"unarymp"     -- unary minus or unary plus 
@@ -113,8 +152,11 @@ local term = lpeg.V"term"           -- multiplicative expressions
 local exp = lpeg.V"exp"             -- aditive expressions
 local rel = lpeg.V"rel"             -- relational expressions
 
-grammar = lpeg.P{"rel",
-   primary = spc * numero + OP * rel * CP,
+grammar = lpeg.P{"stats",
+   stats = stat * (SC * stats)^-1 / nodeSeq,
+   block = OB * stats * SC^-1 * CB + OB * SC^-1 * CB / nodeNull,
+   stat = block + ID * Assign * rel / nodeAssign,
+   primary = spc * numero + OP * rel * CP + var,
    pot = lpeg.Ct(spc * primary * (opPot * primary)^0) / foldBinDir,
    unarymp = (opUnaMin * unarymp / foldUnaMin) +
              (opUnaPlus * unarymp / foldUnaPlus) + pot,
@@ -123,7 +165,6 @@ grammar = lpeg.P{"rel",
    rel = lpeg.Ct(spc * exp * (opRel * exp)^0) / foldBinEsq
 }
 grammar = spc * grammar * eos
-
 
 ---------------------------------- The parser per si: --------------------------
 local function parse(input)
@@ -154,6 +195,9 @@ local function codeExp(state, ast)
    if ast.tag == "numero" then
       addCode(state, "push")
       addCode(state, ast.val)
+   elseif ast.tag == "variable" then
+      addCode(state, "load")
+      addCode(state, ast.var)
    elseif ast.tag == "binop" then
       codeExp(state, ast.esq)
       codeExp(state, ast.dir)
@@ -169,10 +213,26 @@ local function codeExp(state, ast)
    end
 end
 
+-- Function to assign expressions to variables:
+local function codeStat(state, ast)
+   if ast.tag == "assign" then
+      codeExp(state, ast.exp)  -- evaluates the expression to get the value assigned
+      addCode(state, "store")
+      addCode(state, ast.id)
+   elseif ast.tag == "seq" then
+      codeStat(state, ast.st1)
+      codeStat(state, ast.st2)
+   elseif ast.tag == "nothing" then
+      -- do nothing here
+   else
+      error("invalid tree")
+   end
+end
+
 -- The compiler per si:
 local function compile(ast)
    local state = { code = {} }
-   codeExp(state, ast)
+   codeStat(state, ast)
    return state.code
 end
 
@@ -183,7 +243,7 @@ end
 -- when finished, leaves the result of the expression on the top of the stack.
 --------------------------------------------------------------------------------
 -- The interpreter:
-local function run(code, stack)
+local function run(code, mem, stack)
    local pc = 1                   -- program counter
    local top = 0                  -- top of stack
    while pc <= #code do
@@ -231,6 +291,16 @@ local function run(code, stack)
          stack[top] = -stack[top]
       elseif code[pc] == "manter" then
          -- do nothing
+      elseif code[pc] == "load" then
+         pc = pc + 1
+         local id = code[pc]
+         top = top + 1
+         stack[top] = mem[id]
+      elseif code[pc] == "store" then
+         pc = pc + 1
+         local id = code[pc]
+         mem[id] = stack[top]
+         top = top + 1
       else
          error("unknown instruction")
       end
@@ -256,7 +326,9 @@ local code = compile(ast)
 print(pt.pt(code))
 
 -- We run the interpreter passing as arguments the
--- intermediate code and the stack:
+-- intermediate code, a memory for global variables, and the stack:
 local stack = {}
-run(code, stack)
+local mem = {k0 = 0, k1 = 1, k10 = 10}  -- test variables
+run(code, mem, stack)
 print(stack[1])
+print(mem.result)

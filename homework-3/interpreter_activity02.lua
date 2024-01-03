@@ -1,8 +1,5 @@
--- Week 3, "Activity 00"
--- This is not a real activity in the course, this is a kind of refactoring the
--- code to clean up the mess a little bit. Beside the clean up, I decide to use
--- some C Standard names for patterns to keep the things more or less in paralel
--- with standard names alredy used.
+-- Week 3, Activity 02
+-- Identifiers
 --
 -- Student: Abrantes Araújo Silva Filho
 
@@ -24,10 +21,12 @@ local spc = loc.space^0
 local eos = -lpeg.P(1)
 
 -- Basic identifiers
-local nondigit = lpeg.R("az", "AZ", "__")
+local alpha = lpeg.R("az", "AZ", "__")
 local digit = loc.digit
+local alphanum = alpha + digit
 local dot = lpeg.P(".")
-
+local ID = lpeg.C(alpha * alphanum^0) * spc
+   
 -- Numeric constants
 local sign = lpeg.S("+-")
 local hexpre = lpeg.P("0") * lpeg.S("Xx")
@@ -60,9 +59,15 @@ local opRel = (lte + gte + lt + gt + eq + neq) * spc
 --------------------------- Functions for the Parser: --------------------------
 
 -- Function to get a number and return a node for an AST represeenting a number:
-function node(numero)
+function nodeNum(numero)
    return { tag = "numero",
             val = numero }
+end
+
+-- Function to get a variable and return a node for as AST
+function nodeVar(var)
+   return { tag = "variable",
+            var = var }
 end
 
 -- Functions to fold a list and convert the list to an AST:
@@ -105,7 +110,8 @@ end
 
 -------------------- Our grammar for mathematic expression: --------------------
 
-local numero = spc * ((hexdec / tonumber) + (decimal / tonumber)) / node * spc
+local numero = spc * ((hexdec / tonumber) + (decimal / tonumber)) / nodeNum * spc
+local var = ID / nodeVar            -- variables
 local primary = lpeg.V"primary"     -- primary (for recursion and parenthesis)
 local pot = lpeg.V"pot"             -- exponentials
 local unarymp = lpeg.V"unarymp"     -- unary minus or unary plus 
@@ -114,7 +120,7 @@ local exp = lpeg.V"exp"             -- aditive expressions
 local rel = lpeg.V"rel"             -- relational expressions
 
 grammar = lpeg.P{"rel",
-   primary = spc * numero + OP * rel * CP,
+   primary = spc * numero + OP * rel * CP + var,
    pot = lpeg.Ct(spc * primary * (opPot * primary)^0) / foldBinDir,
    unarymp = (opUnaMin * unarymp / foldUnaMin) +
              (opUnaPlus * unarymp / foldUnaPlus) + pot,
@@ -125,6 +131,7 @@ grammar = lpeg.P{"rel",
 grammar = spc * grammar * eos
 
 
+   
 ---------------------------------- The parser per si: --------------------------
 local function parse(input)
    return grammar:match(input)
@@ -154,6 +161,9 @@ local function codeExp(state, ast)
    if ast.tag == "numero" then
       addCode(state, "push")
       addCode(state, ast.val)
+   elseif ast.tag == "variable" then
+      addCode(state, "load")
+      addCode(state, ast.var)
    elseif ast.tag == "binop" then
       codeExp(state, ast.esq)
       codeExp(state, ast.dir)
@@ -183,7 +193,7 @@ end
 -- when finished, leaves the result of the expression on the top of the stack.
 --------------------------------------------------------------------------------
 -- The interpreter:
-local function run(code, stack)
+local function run(code, mem, stack)
    local pc = 1                   -- program counter
    local top = 0                  -- top of stack
    while pc <= #code do
@@ -231,6 +241,11 @@ local function run(code, stack)
          stack[top] = -stack[top]
       elseif code[pc] == "manter" then
          -- do nothing
+      elseif code[pc] == "load" then
+         pc = pc + 1
+         local id = code[pc]
+         top = top + 1
+         stack[top] = mem[id]
       else
          error("unknown instruction")
       end
@@ -256,7 +271,8 @@ local code = compile(ast)
 print(pt.pt(code))
 
 -- We run the interpreter passing as arguments the
--- intermediate code and the stack:
+-- intermediate code, a memory for global variables, and the stack:
 local stack = {}
-run(code, stack)
+local mem = {_k0 = 0, _k1 = 1, k_10 = 10}  -- test variables
+run(code, mem, stack)
 print(stack[1])
