@@ -34,16 +34,27 @@ Roberto Ierusalimschy
 ### Week 2: Arithmetic Expressions (2023-12-08 - 2023-12-15)
 - [x] Introduction to the LPeg Tutorial
 - [x] Overview of the compiler and the stack machine
-- [ ] Stack Machines
-- [ ] Numbers
-- [ ] Hexadecimal Numbers
-- [ ] Summations
-- [ ] Adding Multiplication and Division
-- [ ] Products
-- [ ] Adding More Operators - Part 1
-- [ ] Parenthesized Expressions
-- [ ] Adding More Operators - Part 2
-- [ ] Floating-point Numbers
+- [x] Stack Machines
+- [x] Numbers
+- [x] Hexadecimal Numbers
+- [x] Summations
+- [x] Adding Multiplication and Division
+- [x] Products
+- [x] Adding More Operators - Part 1
+- [x] Parenthesized Expressions
+- [x] Adding More Operators - Part 2
+- [x] Floating-point Numbers
+
+### Week 3: Basic Imperative Programming: Variables, Assignments, Sequences (2023-12-15 - 2023-12-22)
+- [x] Variables
+- [x] Rules for identifiers
+- [x] Assignments
+- [x] Sequences and blocks
+- [x] Empty statement
+- [x] Return statement
+- [x] Print statement
+- [x] Avoinding strings in opcodes for variables
+- [x] Undefined variables
 
 
 ## Other info
