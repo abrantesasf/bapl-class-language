@@ -56,6 +56,19 @@ Roberto Ierusalimschy
 - [x] Avoinding strings in opcodes for variables
 - [x] Undefined variables
 
+### Week 4: Tricks and Tools (2022-12-22 - 2022-12-29)
+- [ ] Object-Oriented Programming
+- [ ] Match-time Captures
+- [ ] Debugging Patterns
+- [ ] Syntax-error Reporting
+- [ ] Error Messages With Line Numbers
+- [ ] Comments
+- [ ] Block Comments
+- [ ] Defining Tokens And Reserved Words Programmatically
+- [ ] Reserving Reserved Words
+- [ ] Alternative For Reserved Words
+- [ ] Structuring The Compiler In OO Style
+
 
 ## Other info
 Selene is a general purpose language built on top of Lua and Lpeg. This language
