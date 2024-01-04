@@ -57,9 +57,9 @@ Roberto Ierusalimschy
 - [x] Undefined variables
 
 ### Week 4: Tricks and Tools (2022-12-22 - 2022-12-29)
-- [ ] Object-Oriented Programming
-- [ ] Match-time Captures
-- [ ] Debugging Patterns
+- [x] Object-Oriented Programming
+- [x] Match-time Captures
+- [x] Debugging Patterns
 - [ ] Syntax-error Reporting
 - [ ] Error Messages With Line Numbers
 - [ ] Comments
